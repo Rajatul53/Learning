@@ -21,7 +21,5 @@ public class AccountsServiceImpl implements IAccountsService {
 
         Customer customer = CustomerMapper.mapToCustomer(customerDto, new Customer());
         customerRepository.save(customer);
-
-
     }
 }
