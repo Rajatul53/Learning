@@ -3,6 +3,7 @@ package com.eaxybites.accounts.controller;
 import com.eaxybites.accounts.constants.AccountsConstants;
 import com.eaxybites.accounts.dto.CustomerDto;
 import com.eaxybites.accounts.dto.ResponseDto;
+import com.eaxybites.accounts.service.IAccountsService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,8 +16,11 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class AccountsController {
 
+    private IAccountsService iAccountsService;
+
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createAccount(@RequestBody CustomerDto customerDto) {
+        iAccountsService.createAccount(customerDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ResponseDto(AccountsConstants.STATUS_201, AccountsConstants.MESSAGE_201));
