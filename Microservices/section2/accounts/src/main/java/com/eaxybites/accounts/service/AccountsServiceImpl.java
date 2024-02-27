@@ -1,10 +1,13 @@
 package com.eaxybites.accounts.service;
 
 import com.eaxybites.accounts.constants.AccountsConstants;
+import com.eaxybites.accounts.dto.AccountsDto;
 import com.eaxybites.accounts.dto.CustomerDto;
 import com.eaxybites.accounts.entity.Accounts;
 import com.eaxybites.accounts.entity.Customer;
 import com.eaxybites.accounts.exception.CustomerAlreadyExistsException;
+import com.eaxybites.accounts.exception.ResourceNotFoundException;
+import com.eaxybites.accounts.mapper.AccountsMapper;
 import com.eaxybites.accounts.mapper.CustomerMapper;
 import com.eaxybites.accounts.repository.AccountsRepository;
 import com.eaxybites.accounts.repository.CustomerRepository;
@@ -48,5 +51,21 @@ public class AccountsServiceImpl implements IAccountsService {
         newAccount.setCreatedAt(LocalDateTime.now());
         newAccount.setCreatedBy("Anonymous");
         return newAccount;
+    }
+
+    @Override
+    public CustomerDto fetchAccount(String mobileNumber) {
+
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "Mobile Number", mobileNumber)
+        );
+
+        Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
+                () -> new ResourceNotFoundException("Account", "customerId", customer.getCustomerId().toString())
+        );
+
+        CustomerDto customerDto = CustomerMapper.mapToCustomerDto(customer, new CustomerDto());
+        customerDto.setAccountsDto(AccountsMapper.mapToAccountsDto(accounts, new AccountsDto()));
+        return customerDto;
     }
 }
